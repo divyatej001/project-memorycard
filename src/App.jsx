@@ -1,33 +1,75 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+//import { useEffect } from 'react'
 import './App.css'
+import backImage from './assets/card_back.jpg';
+
+
+const imageCards = [
+  { "name": "combusken", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/256.png" },
+  { "name": "marshtomp", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/259.png" },
+  { "name": "grovyle", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/253.png" },
+  { "name": "blaziken", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/257.png" },
+  { "name": "swampert", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/260.png" },
+  { "name": "sceptile", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/254.png" },
+  { "name": "latios", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/381.png" },
+  { "name": "latias", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/380.png" },
+  { "name": "groudon", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/383.png" },
+  { "name": "kyogre", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/382.png" },
+  { "name": "rayquaza", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/384.png" }
+];
+
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [cards, setCards] = useState([]);
+  const [count, setCount] = useState(0);
+  const [clickedCards, setClickedCards] = useState(new Set());
+  const [gameOver, setGameOver] = useState(false);
+  const [gameWon, setGameWon] = useState(false);
+  const TOTAL_CARDS = imageCards.length;
+  
+  const gameReset = ()=>{
+    setCount(0);
+    setClickedCards(new Set());
+    setGameOver(false);
+  }
+  
+  const shuffleCards = ()=>{
+    const imageCardsshuffled = [...imageCards];
+    for(let i=imageCardsshuffled.length-1;i>0;i--) {
+      const randomIndex = Math.floor(Math.random() * (i + 1));
+      [imageCardsshuffled[i], imageCardsshuffled[randomIndex]] = [imageCardsshuffled[randomIndex], imageCardsshuffled[i]];
+    }
+    setCards(imageCardsshuffled);
+  }
+
+  const cardOnclick = (name)=> {
+    if (!gameOver && !clickedCards.has(name)) {
+      setCount(count + 1);
+      setClickedCards(new Set(clickedCards).add(name));
+      if(count+1===TOTAL_CARDS)
+        setGameWon(true);
+    } else {
+      setGameOver(true);
+    }
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className='App'>
+        <h1>Pokemon Memory Card Game</h1>
+        <button onClick={()=>{gameReset();shuffleCards();}}>Start New Game</button>
+        <h2>Score : {count}</h2>
+        <div className='card-box'>
+          {cards.map(card=>(
+            <div className='card' key={card.name} onClick={() => cardOnclick(card.name)}>
+              <div>
+                  <img className='front' src={card.url} alt={card.name} />
+                  <img className='back' src={backImage} alt='back of the card'/>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
