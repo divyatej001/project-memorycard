@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -14,16 +16,48 @@
   grid-gap: 10px;
   margin: 30px;
 }
-
-.card{
+.card {
   position: relative;
+  width: 100px; /* Adjust width as needed */
+  height: 100px; /* Adjust height as needed */
+  margin: 0; /* Remove any default margin */
+  display: inline-block; /* Ensure cards are displayed in-line */
 }
 
-.card img {
-  border: 2px solid;
-  border-color: black;
-  height: 100px;
+.card img{
+  position: absolute;
   width: 100px;
+  height: 100px;
+  overflow: hidden;
+  perspective: 1000px;
+  object-fit: cover;
+}
+
+.front, .back {
+  width: 100%;
+  height: 100px;
+  
+  backface-visibility: hidden;
+  transition: transform 0.5s;
+}
+
+.front {
+  z-index: 2;
+  position: absolute;
+}
+.back {
+  transform: rotateY(180deg); /* Initially rotate back image to hide it */
+  z-index: 1;
+  position: absolute;
+}
+
+.flipped .front {
+  transform: rotateY(-180deg); 
+
+}
+
+.flipped .back {
+  transform: rotateY(0deg); 
 }
 
 /*@keyframes logo-spin {
