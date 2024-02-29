@@ -1,0 +1,20 @@
+.loading{
+    text-align: center;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    border: 10px solid;
+    object-fit: contain;
+    width: max-content;
+    height: max-content;
+}
+.loading img{
+    width: 100px;
+    height: 100px;
+    animation: spin 1s linear infinite; /* Define the rotation animation */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); } /* Start rotating from 0 degrees */
+    100% { transform: rotate(360deg); } /* Rotate to 360 degrees */
+  }

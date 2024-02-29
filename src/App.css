@@ -7,36 +7,47 @@
   padding: 2rem;
   text-align: center;
 }
-
+.App{
+  display: block;
+  justify-items: center;
+  align-items: center;
+}
 .card-box{
   display: grid;
-  width: 70vw;
+  width: max-content;
   height: max-content;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 10px;
-  margin: 30px;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-gap: 100px;
+  margin: 50px auto;
 }
 .card {
   position: relative;
   width: 100px; /* Adjust width as needed */
-  height: 100px; /* Adjust height as needed */
+  height: 150px; /* Adjust height as needed */
   margin: 0; /* Remove any default margin */
   display: inline-block; /* Ensure cards are displayed in-line */
+  object-fit: contain;
 }
+.card-inner {
+  position: absolute;
+  object-fit: contain;
 
+
+}
 .card img{
   position: absolute;
   width: 100px;
-  height: 100px;
+  height: 150px;
   overflow: hidden;
   perspective: 1000px;
-  object-fit: cover;
+  
 }
 
 .front, .back {
   width: 100%;
   height: 100px;
-  
+  border-color: black;
+  border: 5px solid;
   backface-visibility: hidden;
   transition: transform 0.5s;
 }
@@ -44,6 +55,11 @@
 .front {
   z-index: 2;
   position: absolute;
+  background-color: white;
+  background-image: url(./assets/pokeball_bg.jpg);
+  background-position: center;
+  background-size: contain;
+  object-fit: contain;
 }
 .back {
   transform: rotateY(180deg); /* Initially rotate back image to hide it */

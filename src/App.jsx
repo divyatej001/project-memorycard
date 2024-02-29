@@ -4,22 +4,13 @@ import './App.css'
 import backImage from './assets/card_back.jpg';
 import '../src/components/Winbox';
 import Winbox from '../src/components/Winbox';
+import flipSound from './assets/flip_sound.mp3'
+import Loading from '../src/components/Loading';
 
-const imageCards = [
-  { "name": "combusken", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/256.png" },
-  { "name": "marshtomp", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/259.png" },
-  { "name": "grovyle", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/253.png" },
-  /*{ "name": "blaziken", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/257.png" },
-  { "name": "swampert", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/260.png" },
-  { "name": "sceptile", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/254.png" },
-  { "name": "latios", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/381.png" },
-  { "name": "latias", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/380.png" },
-  { "name": "groudon", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/383.png" },
-  { "name": "kyogre", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/382.png" },
-  { "name": "rayquaza", "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/384.png" }*/
-];
+let imageCards = [];
 
 const TOTAL_CARDS = imageCards.length;
+let BEST_SCORE = 0;
 
 
 function App() {
@@ -29,16 +20,57 @@ function App() {
   const [gameOver, setGameOver] = useState(false);
   const [gameWon, setGameWon] = useState(false);
   const [flip, setFlip] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const flipAudio = new Audio(flipSound);
+  const [isLoading, setIsLoading] = useState(false);
+  const TOTAL_POKEMONS = 721;
+  BEST_SCORE = Math.floor(Math.max(BEST_SCORE, count));
 
-  /*useEffect(() => {
-    shuffleCards(); // Shuffle cards on initial render
-  }, []);*/
+  useEffect(() => {
+    if (flip) {
+      flipAudio.play();
+    }
+  }, [flip]);
+
+  const generateIds = async()=>{
+    const ids = [];
+    for(let i=0; i<10; i++) {
+      const id = Math.floor(Math.random() * ((TOTAL_POKEMONS-1)+1) + 1);
+      ids.push(id);
+    }
+    return ids;
+  }
+
+  const getPokemon = async () => {
+    const ids = await generateIds();
+    const pokelist = [];
+    for (const id of ids) {
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+      const pokemonData = await response.json();
+      const { name, sprites } = pokemonData;
+      const frontDefaultSprite = sprites.front_default;
+      pokelist.push({ name, frontDefaultSprite });
+      //console.log(pokelist);
+    }
+    return pokelist;
+  }  
+
+  const setPokemon = async ()=>{
+    const list = await getPokemon();
+    imageCards = [...list];
+  }
   
-  const gameReset = ()=>{
+  const gameReset = async()=>{
+    setIsLoading(true);
     setCount(0);
+    //console.log(list);
+    await setPokemon();
     setClickedCards(new Set());
     setGameOver(false);
     setFlip(false);
+    setIsOpen(false);
+    shuffleCards();
+    setIsLoading(false);
   }
   
   const shuffleCards = ()=>{
@@ -72,19 +104,20 @@ function App() {
     <>
       <div className='App'>
         <h1>Pokemon Memory Card Game</h1>
-        <button onClick={()=>{gameReset();shuffleCards();}}>Start New Game</button>
-        <h2>Score : {count}</h2>
+        <button onClick={()=>{gameReset()}}>Start New Game</button>
+        <h2>Score: {count}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;High Score: {BEST_SCORE}</h2>
         <div className='card-box'>
           {cards.map(card=>(
             <div className={`card ${flip ? 'flipped' : ''}`} key={card.name} onClick={() => cardOnclick(card.name)}>
-              <div>
-                  <img className='front' src={card.url} alt={card.name} />
+              <div className='card-inner'>
+                  <img className='front' src={card.frontDefaultSprite} alt={card.name} />
                   <img className='back' src={backImage} alt='back of the card'/>
               </div>
             </div>
           ))}
         </div>
-        {gameWon||gameOver ? <Winbox count={count} gameOver={gameOver} gameReset={gameReset}/> : null}
+        {gameWon||gameOver ? <Winbox count={count} gameOver={gameOver} gameReset={gameReset} isOpen={true}/> : null}
+        {isLoading && <Loading isLoading={isLoading}/> }
       </div>
     </>
   )

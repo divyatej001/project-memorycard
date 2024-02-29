@@ -13,6 +13,7 @@
   background-color: #242424;*/
 
   background-image: url('assets/bg.jpg');
+  background-attachment: fixed;
   background-size: cover;
   background-position: center;
 
