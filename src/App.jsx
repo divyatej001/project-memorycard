@@ -9,7 +9,7 @@ import Loading from '../src/components/Loading';
 
 let imageCards = [];
 
-const TOTAL_CARDS = imageCards.length;
+const TOTAL_CARDS = 10;
 let BEST_SCORE = 0;
 
 
@@ -67,13 +67,14 @@ function App() {
     await setPokemon();
     setClickedCards(new Set());
     setGameOver(false);
+    setGameWon(false);
     setFlip(false);
     setIsOpen(false);
     shuffleCards();
     setIsLoading(false);
   }
   
-  const shuffleCards = ()=>{
+  const shuffleCards = async()=>{
     const imageCardsshuffled = [...imageCards];
     for(let i=imageCardsshuffled.length-1;i>0;i--) {
       const randomIndex = Math.floor(Math.random() * (i + 1));
@@ -82,19 +83,20 @@ function App() {
     setCards(imageCardsshuffled);
   }
 
-  const cardOnclick = (name)=> {
+  const cardOnclick = async(name)=> {
     if (!gameOver && !clickedCards.has(name)) {
-      setCount(count + 1);
-      setClickedCards(new Set(clickedCards).add(name));
-      setFlip(true);
-      setTimeout(() => {
-        shuffleCards();
-        setFlip(false);
-      }, 1000);
+      setCount(count+1);
       if(count+1===TOTAL_CARDS)
         setGameWon(true);
+      setClickedCards(new Set(clickedCards).add(name));
+      setFlip(true);
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for .5 second
+      shuffleCards();
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for .5 second
+      setFlip(false);
+
     } else {
-      setGameOver(true);
+        setGameOver(true);
     }
     
   }  
